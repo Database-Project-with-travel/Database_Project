@@ -1,6 +1,7 @@
 # Database_Project
 
-##Setup DataBase and Create Tables
+Setup DataBase and Create Tables
+-
 To use Chinese, after creating the database, please type the command:
 ALTER DATABASE yourdatabasename CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
