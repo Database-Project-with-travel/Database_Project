@@ -1,5 +1,6 @@
 source create_table/create_table_country.sql
 source create_table/create_table_exchange_rate.sql
+source create_table/create_table_average_rate.sql
 
 source create_table/create_table_inbound_age.sql
 source create_table/create_table_inbound_gender.sql
