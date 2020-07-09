@@ -1,5 +1,6 @@
 <?php
 header("Content-Type:text/html;charset=utf-8");
+#此SQL為總人數結合匯率
 
 $servername = "localhost";
 $username = "project";
@@ -45,16 +46,26 @@ try{
 
 	if($_POST){
 		foreach($_POST as $k => $v){
-			if($k == "time")
-				$sql = ($v == "month") ? "( SELECT tmp.年, tmp.月, tmp.居住地, " : "( SELECT tmp.年, tmp.居住地, ";
-			else if(substr($k,0,5) == "syear")
-				$starty = substr($k,5,strlen($k)-5);
-			else if(substr($k,0,6) == "smonth")
-				$startm = substr($k,6,strlen($k)-6);		
-			else if(substr($k,0,5) == "eyear")
-				$endy = substr($k,5,strlen($k)-5);
-			else if(substr($k,0,6) == "emonth")
-				$endm = substr($k,6,strlen($k)-6);
+			if($k == "time"){
+                $sql = ($v == "month") ? "( SELECT tmp.年, tmp.月, tmp.居住地, " : "( SELECT tmp.年, tmp.居住地, ";
+                $cnt++;
+			}
+			else if($k == "syear"){
+                $starty = $v;
+                $cnt++;
+			}
+			else if($k == "smonth"){
+                $startm = $v;
+                $cnt++;
+			}		
+			else if($k == "eyear"){
+                $endy = $v;
+                $cnt++;
+			}
+			else if($k == "emonth"){
+                $endm = $v;
+                $cnt++;
+			}
 			else{
                 $check = 0;
                 foreach($type as $k1 => $v1){
@@ -69,7 +80,7 @@ try{
             }
 
         }
-        if(sizeof($country) == 0 || sizeof($record) == 0){
+        if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 5){
             header("Location: /select_inbound.php\n");
         }
 		$sql = $sql."sum(";

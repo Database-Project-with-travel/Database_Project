@@ -1,5 +1,6 @@
 <?php
 header("Content-Type:text/html;charset=utf-8");
+#此php檔為人數成長率的選項
 $servername = "localhost";
 $username = "project";
 $password = "project";
@@ -36,8 +37,7 @@ try{
 	foreach($result as $row){
 		foreach($row as $k => $v){
 			if($v == "") continue;
-			echo "<input type=\"checkbox\" name=\"syear$v\",value=\"$v\">";
-			echo "<label for=\"$v\">".$v."</label>";
+			echo "<input type=\"radio\" name =\"syear\" value=\"$v\"> $v &nbsp";
 		}
 	}
 	echo "<br>";
@@ -52,8 +52,7 @@ try{
 	foreach($result as $row){
 		foreach($row as $k => $v){
 			if($v == "") continue;
-			echo "<input type=\"checkbox\" name=\"smonth$v\",value=\"$v\">";
-			echo "<label for=\"$v\">".$v."</label>";
+			echo "<input type=\"radio\" name =\"smonth\" value=\"$v\"> $v &nbsp";
 		}
 	}
 	echo "<br>";
@@ -68,8 +67,7 @@ try{
 	foreach($result as $row){
 		foreach($row as $k => $v){
 			if($v == "") continue;
-			echo "<input type=\"checkbox\" name=\"eyear$v\",value=\"$v\">";
-			echo "<label for=\"$v\">".$v."</label>";
+			echo "<input type=\"radio\" name =\"eyear\" value=\"$v\"> $v &nbsp";
 		}
 	}
 	echo "<br>";
@@ -84,8 +82,7 @@ try{
 	foreach($result as $row){
 		foreach($row as $k => $v){
 			if($v == "") continue;
-			echo "<input type=\"checkbox\" name=\"emonth$v\",value=\"$v\">";
-			echo "<label for=\"$v\">".$v."</label>";
+			echo "<input type=\"radio\" name =\"emonth\" value=\"$v\"> $v &nbsp";
 		}
 	}
 	echo "<br><br>";

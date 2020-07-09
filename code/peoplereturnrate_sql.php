@@ -1,5 +1,6 @@
 <?php
 header("Content-Type:text/html;charset=utf-8");
+#此SQL為人數成長率結合匯率
 
 $servername = "localhost";
 $username = "project";
@@ -43,20 +44,31 @@ try{
 	$endm = "";
 	$finalsql = "";
 	$record = array();
-    $country = array();
+	$country = array();
+	$cnt = 0;//use to check if data is not enough
 
 	if($_POST){
 		foreach($_POST as $k => $v){
-			if($k == "time")
-                $sql = ($v == "month") ? "( SELECT 年, 月, 居住地, " : "( SELECT 年, 居住地, ";
-			else if(substr($k,0,5) == "syear")
-				$starty = substr($k,5,strlen($k)-5);
-			else if(substr($k,0,6) == "smonth")
-				$startm = substr($k,6,strlen($k)-6);		
-			else if(substr($k,0,5) == "eyear")
-				$endy = substr($k,5,strlen($k)-5);
-			else if(substr($k,0,6) == "emonth")
-				$endm = substr($k,6,strlen($k)-6);
+			if($k == "time"){
+				$sql = ($v == "month") ? "( SELECT 年, 月, 居住地, " : "( SELECT 年, 居住地, ";
+				$cnt++;
+			}
+			else if($k == "syear"){
+				$starty = $v;
+				$cnt++;
+			}
+			else if($k == "smonth"){
+				$startm = $v;	
+				$cnt++;
+			}	
+			else if($k == "eyear"){
+				$endy = $v;
+				$cnt++;
+			}
+			else if($k == "emonth"){
+				$endm = $v;
+				$cnt++;
+			}
 			else{
                 $check = 0;
                 foreach($type as $k1 => $v1){
@@ -71,7 +83,7 @@ try{
             }
 
 		}
-		if(sizeof($country) == 0 || sizeof($record) == 0){
+		if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 5){
             header("Location: /select_inbound.php\n");
         }
         $sql = $sql."sum(";
@@ -195,7 +207,7 @@ try{
 		echo "</th><th>總人數</th><th>人數成長率(百分比)</th></tr>";
 	else
 		echo "</th><th>總人數</th><th>人數成長率(百分比)</th><th>匯率</th></tr>";
-	echo $finalsql;
+	#echo $finalsql;
 	echo "人數成長比例 = (某期間人數/前期間人口)*100% <br>";
 	echo "!!!當前期間人口總數為 0 時，則顯示'NULL'!!!<br>";
 	$stmt = $conn->prepare($finalsql);
