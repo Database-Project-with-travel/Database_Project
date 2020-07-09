@@ -17,7 +17,7 @@ try{
 	$username,$password);
     $conn->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
     
-	echo "<form method=\"post\" action=\"/peoplereturnrate_option.php\">";
+	echo "<form method=\"post\" action=\"/peoplereturnrate_sql.php\">";
 
 	echo "請選擇統計方式：<br>";
 	echo "<input type=\"radio\" name =\"time\" value=\"year\"> 年 (Year) &nbsp";
