@@ -1,6 +1,6 @@
 <?php
 header("Content-Type:text/html;charset=utf-8");
-#此SQL為總人數結合匯率
+#此SQL為入境總人數排序結合匯率
 
 $servername = "localhost";
 $username = "project";
