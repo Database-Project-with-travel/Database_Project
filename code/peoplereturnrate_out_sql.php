@@ -1,6 +1,6 @@
 <?php
 header("Content-Type:text/html;charset=utf-8");
-#此SQL為人數成長率結合匯率
+#此SQL為出國人數成長率結合匯率
 
 $servername = "localhost";
 $username = "project";
