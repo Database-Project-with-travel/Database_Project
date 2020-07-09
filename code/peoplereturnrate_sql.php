@@ -142,18 +142,20 @@ try{
 		if($exchangerate == "yes"){
 			if($_POST["time"] == "year")
 				$sql_rate = "( select rate.年, currency.國家名稱, sum(rate.對新台幣匯率) as 對新台幣匯率總和,
-							 count(rate.對新台幣匯率 <> 0 or NULL) as number, rate.幣別 ";
+							 count(rate.對新台幣匯率 <> 0 or NULL) as number, rate.幣別,
+							  sum(rate.對美元匯率) as 對美元匯率總和,
+							 count(rate.對美元匯率 <> 0 or NULL) as number1 ";
 			else
-				$sql_rate = "( select rate.年, rate.月, currency.國家名稱, rate.對新台幣匯率, rate.幣別 ";
-			$sql_rate = $sql_rate."from (select 年, 月, '美元' as 幣別, 美元 as 對新台幣匯率 from rate_to_TWD union all 
-							select 年, 月, '人民幣' as 幣別, 人民幣 as 對新台幣匯率 from rate_to_TWD union all 
-						    select 年, 月, '歐元' as 幣別, 歐元 as 對新台幣匯率 from rate_to_TWD union all 
-							select 年, 月, '日幣' as 幣別, 日幣 as 對新台幣匯率 from rate_to_TWD union all 
-						    select 年, 月, '英鎊' as 幣別, 英鎊 as 對新台幣匯率 from rate_to_TWD union all 
-							select 年, 月, '澳幣' as 幣別, 澳幣 as 對新台幣匯率 from rate_to_TWD union all 
-						    select 年, 月, '港幣' as 幣別, 港幣 as 對新台幣匯率 from rate_to_TWD union all 
-						    select 年, 月, '南非幣' as 幣別, 南非幣 as 對新台幣匯率 from rate_to_TWD union all 
-						    select 年, 月, '紐幣' as 幣別, 紐幣 as 對新台幣匯率 from rate_to_TWD ) as rate, 
+				$sql_rate = "( select rate.年, rate.月, currency.國家名稱, rate.對新台幣匯率, rate.對美元匯率, rate.幣別 ";
+			$sql_rate = $sql_rate."from (select 年, 月, '美元' as 幣別, 美元 as 對新台幣匯率, 美元/美元 as 對美元匯率 from rate_to_TWD union all
+										select 年, 月, '人民幣' as 幣別, 人民幣 as 對新台幣匯率, 人民幣/美元 as 對美元匯率 from rate_to_TWD union all
+										select 年, 月, '歐元' as 幣別, 歐元 as 對新台幣匯率, 歐元/美元 as 對美元匯率 from rate_to_TWD union all
+										select 年, 月, '日幣' as 幣別, 日幣 as 對新台幣匯率, 日幣/美元 as 對美元匯率 from rate_to_TWD union all
+										select 年, 月, '英鎊' as 幣別, 英鎊 as 對新台幣匯率, 英鎊/美元 as 對美元匯率 from rate_to_TWD union all
+										select 年, 月, '澳幣' as 幣別, 澳幣 as 對新台幣匯率, 澳幣/美元 as 對美元匯率 from rate_to_TWD union all
+										select 年, 月, '港幣' as 幣別, 港幣 as 對新台幣匯率, 港幣/美元 as 對美元匯率 from rate_to_TWD union all
+										select 年, 月, '南非幣' as 幣別, 南非幣 as 對新台幣匯率, 南非幣/美元 as 對美元匯率 from rate_to_TWD union all
+										select 年, 月, '紐幣' as 幣別, 紐幣 as 對新台幣匯率, 紐幣/美元 as 對美元匯率 from rate_to_TWD ) as rate, 
 						 ( select distinct country_currency.國家名稱, country_currency.幣別 from country_currency where";
 			foreach($country as $k => $v){
 				$sql_rate = $sql_rate." country_currency.國家名稱='".$v."' or";
@@ -171,13 +173,14 @@ try{
             $finalsql = $finalsql."ans.".$v.", ";
 		}
         if($_POST["time"] == "year" && $exchangerate == "yes"){
-			$finalsql = $finalsql."ans.total_people, ans.ratio, "."
-						(case when exchange.對新台幣匯率總和 = 0 then 'NULL' else exchange.對新台幣匯率總和/exchange.number end), exchange.幣別".  
+			$finalsql = $finalsql."ans.total_people, ans.ratio, "."exchange.幣別, 
+						(case when exchange.對新台幣匯率總和 = 0 then 'NULL' else exchange.對新台幣匯率總和/exchange.number end),
+						(case when exchange.對美元匯率總和 = 0 then 'NULL' else exchange.對美元匯率總和/exchange.number1 end)".  
 						" from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 and ans.居住地 = exchange.國家名稱 group by ans.年, ans.居住地 order by ans.年 ASC";
 		}
         else if($_POST["time"] == "month" && $exchangerate == "yes"){    
 			$finalsql = $finalsql."ans.total_people, ans.ratio, "."
-						exchange.對新台幣匯率, exchange.幣別 from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 
+						exchange.幣別, exchange.對新台幣匯率, exchange.對美元匯率 from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 
 						and ans.月 = exchange.月 and ans.居住地 = exchange.國家名稱 
 						group by ans.年, ans.月, ans.居住地 order by ans.年, ans.月 ASC";
 		}
@@ -206,7 +209,7 @@ try{
 	if($exchangerate == "no")
 		echo "</th><th>總人數</th><th>人數成長率(百分比)</th></tr>";
 	else
-		echo "</th><th>總人數</th><th>人數成長率(百分比)</th><th>匯率</th><th>幣別</th></tr>";
+		echo "</th><th>總人數</th><th>人數成長率(百分比)</th><th>幣別</th><th>對新台幣匯率</th><th>對美元匯率</th></tr>";
 	#echo $finalsql;
 	echo "人數成長比例 = (某期間人數/前期間人口)*100% <br>";
 	echo "!!!當前期間人口總數為 0 時，則顯示'NULL'!!!<br>";
