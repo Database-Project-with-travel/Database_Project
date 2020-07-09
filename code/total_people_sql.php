@@ -43,6 +43,7 @@ try{
 	$endm = "";
 	$record = array();
     $country = array();
+    $cnt = 0;//use to check if data is not enough
 
 	if($_POST){
 		foreach($_POST as $k => $v){
