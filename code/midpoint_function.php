@@ -36,8 +36,6 @@ try{
           else
                header("Location: /delete_inbound_outbound.php\n");              
      }
-     else
-          header("Location: /exchange_rate_option.php\n"); 
 }catch(PDOException $e){
 	echo "Error: " . $e->getMessage();
 }    

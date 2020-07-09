@@ -8,8 +8,7 @@ try{
     echo "<input type=\"radio\" name =\"function\" value=\"select\"> select &nbsp";
 	echo "<input type=\"radio\" name =\"function\" value=\"insert\"> insert &nbsp";
 	echo "<input type=\"radio\" name =\"function\" value=\"update\"> update &nbsp";
-    echo "<input type=\"radio\" name =\"function\" value=\"delete\"> delete &nbsp";
-    echo "<input type=\"radio\" name =\"function\" value=\"exchangerate\"> exchangerate &nbsp";   
+    echo "<input type=\"radio\" name =\"function\" value=\"delete\"> delete &nbsp"; 
     echo "<br>";
     echo "請點擊想要執行的類別 ( 當選擇 exchangerate 時，下方的選項即無影響 ) <br>";
 	echo "<input type=\"radio\" name =\"way\" value=\"Inbound\"> 入境 (Inbound) &nbsp";
