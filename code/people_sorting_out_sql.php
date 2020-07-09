@@ -1,6 +1,6 @@
 <?php
 header("Content-Type:text/html;charset=utf-8");
-#此SQL為出國總人數排序結合匯率
+#此SQL為總人數結合匯率
 
 $servername = "localhost";
 $username = "project";
@@ -94,12 +94,13 @@ try{
 		}
         $sql = rtrim($sql,"+");
         $sql = $exchangerate == "no" ? $sql.") as total_people" 
-                                     : $sql.") as total_people, (case when exchange.對新台幣匯率 = 0 then 'NULL' else exchange.對新台幣匯率 end) as 對新台幣匯率";
+                                     : $sql.") as total_people, (case when exchange.對新台幣匯率 = 0 then 'NULL' else exchange.對新台幣匯率 end) as 對新台幣匯率
+                                            , exchange.幣別";
         if($_POST["time"]=="year" && $exchangerate == "yes")
             $sql = $sql.", sum(exchange.對新台幣匯率) as 對新台幣匯率總和, count(exchange.對新台幣匯率 <> 0 or NULL) as number";
         
         if($exchangerate == "yes"){
-            $sql_rate = "( select rate.年, rate.月, currency.國家名稱, rate.對新台幣匯率
+            $sql_rate = "( select rate.年, rate.月, currency.國家名稱, rate.對新台幣匯率, rate.幣別
                      from (select 年, 月, '美元' as 幣別, 美元 as 對新台幣匯率 from rate_to_TWD union all
                            select 年, 月, '人民幣' as 幣別, 人民幣 as 對新台幣匯率 from rate_to_TWD union all
                            select 年, 月, '歐元' as 幣別, 歐元 as 對新台幣匯率 from rate_to_TWD union all
@@ -152,10 +153,10 @@ try{
 		}
         $newsql = rtrim($newsql,"+");
         if($_POST["time"] == "year" && $exchangerate == "yes")
-            $newsql = $newsql.") as total_people, (case when ans.對新台幣匯率總和 = 0 then 'NULL' else ans.對新台幣匯率總和/ans.number end) 
+            $newsql = $newsql.") as total_people, (case when ans.對新台幣匯率總和 = 0 then 'NULL' else ans.對新台幣匯率總和/ans.number end), ans.幣別 
                         from ".$sql." group by ans.年, ans.國家名稱";
         else if($_POST["time"] == "month" && $exchangerate == "yes")    
-            $newsql = $newsql.") as total_people, ans.對新台幣匯率 from ".$sql.
+            $newsql = $newsql.") as total_people, ans.對新台幣匯率, ans.幣別 from ".$sql.
                                   " group by ans.年, ans.月, ans.國家名稱";
         else if($_POST["time"] == "year" && $exchangerate == "no")
             $newsql = $newsql.") as total_people from ".$sql." group by ans.年, ans.國家名稱";
@@ -184,7 +185,7 @@ try{
     if($exchangerate == "no")
         echo "</th><th>總人數</th></tr>";
     else
-        echo "</th><th>總人數</th><th>匯率</th></tr>";
+        echo "</th><th>總人數</th><th>匯率</th><th>幣別</th></tr>";
 	echo $finalsql;
 	$stmt = $conn->prepare($finalsql);
 	$stmt->execute();	

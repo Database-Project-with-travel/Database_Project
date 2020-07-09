@@ -1,6 +1,6 @@
 <?php
 header("Content-Type:text/html;charset=utf-8");
-#此SQL為出國人數成長率結合匯率
+#此SQL為人數成長率結合匯率
 
 $servername = "localhost";
 $username = "project";
@@ -142,9 +142,9 @@ try{
 		if($exchangerate == "yes"){
 			if($_POST["time"] == "year")
 				$sql_rate = "( select rate.年, currency.國家名稱, sum(rate.對新台幣匯率) as 對新台幣匯率總和,
-							 count(rate.對新台幣匯率 <> 0 or NULL) as number ";
+							 count(rate.對新台幣匯率 <> 0 or NULL) as number, rate.幣別 ";
 			else
-				$sql_rate = "( select rate.年, rate.月, currency.國家名稱, rate.對新台幣匯率 ";
+				$sql_rate = "( select rate.年, rate.月, currency.國家名稱, rate.對新台幣匯率, rate.幣別 ";
 			$sql_rate = $sql_rate."from (select 年, 月, '美元' as 幣別, 美元 as 對新台幣匯率 from rate_to_TWD union all 
 							select 年, 月, '人民幣' as 幣別, 人民幣 as 對新台幣匯率 from rate_to_TWD union all 
 						    select 年, 月, '歐元' as 幣別, 歐元 as 對新台幣匯率 from rate_to_TWD union all 
@@ -172,12 +172,12 @@ try{
 		}
         if($_POST["time"] == "year" && $exchangerate == "yes"){
 			$finalsql = $finalsql."ans.total_people, ans.ratio, "."
-						(case when exchange.對新台幣匯率總和 = 0 then 'NULL' else exchange.對新台幣匯率總和/exchange.number end)".  
+						(case when exchange.對新台幣匯率總和 = 0 then 'NULL' else exchange.對新台幣匯率總和/exchange.number end), exchange.幣別".  
 						" from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 and ans.國家名稱 = exchange.國家名稱 group by ans.年, ans.國家名稱 order by ans.年 ASC";
 		}
         else if($_POST["time"] == "month" && $exchangerate == "yes"){    
 			$finalsql = $finalsql."ans.total_people, ans.ratio, "."
-						exchange.對新台幣匯率 from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 
+						exchange.對新台幣匯率, exchange.幣別 from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 
 						and ans.月 = exchange.月 and ans.國家名稱 = exchange.國家名稱 
 						group by ans.年, ans.月, ans.國家名稱 order by ans.年, ans.月 ASC";
 		}
@@ -206,7 +206,7 @@ try{
 	if($exchangerate == "no")
 		echo "</th><th>總人數</th><th>人數成長率(百分比)</th></tr>";
 	else
-		echo "</th><th>總人數</th><th>人數成長率(百分比)</th><th>匯率</th></tr>";
+		echo "</th><th>總人數</th><th>人數成長率(百分比)</th><th>匯率</th><th>幣別</th></tr>";
 	#echo $finalsql;
 	echo "人數成長比例 = (某期間人數/前期間人口)*100% <br>";
 	echo "!!!當前期間人口總數為 0 時，則顯示'NULL'!!!<br>";
