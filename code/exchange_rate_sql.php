@@ -37,7 +37,7 @@ try{
 				$endm = substr($k,6,strlen($k)-6);
 			else if($k == "對新台幣匯率" || $k == "對美元匯率")
 			{
-				$sql = ($_POST["time"] == "month") ? $sql."rate.".$k.", " : $sql."avg(rate.".$k."), ";
+				$sql = ($_POST["time"] == "month") ? $sql."rate.".$k.", " : $sql."avg(case when rate.".$k." = 0 then NULL else rate.".$k." end), ";
 				array_push($typecurrency, $k);
 			}
 			else
@@ -83,7 +83,7 @@ try{
 			$sql = $sql." group by rate.年, rate.月, currency.國家名稱";	
 		}	
 	
-		$sql = $sql.";";
+		$sql = $sql." order by rate.年;";
 
 
 	echo "<table style='border: solid 1px black;'>";
@@ -131,5 +131,4 @@ try{
 }
 $conn = null;
 echo "</table>";
-
 ?>
