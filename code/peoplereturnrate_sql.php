@@ -180,7 +180,8 @@ try{
 		}
         else if($_POST["time"] == "month" && $exchangerate == "yes"){    
 			$finalsql = $finalsql."ans.total_people, ans.ratio, "."
-						exchange.幣別, exchange.對新台幣匯率, exchange.對美元匯率 from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 
+						exchange.幣別, (case when exchange.對新台幣匯率 = 0 then 'NULL' else exchange.對新台幣匯率 end),
+						(case when exchange.對美元匯率 = 0 then 'NULL' else exchange.對美元匯率 end) from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 
 						and ans.月 = exchange.月 and ans.居住地 = exchange.國家名稱 
 						group by ans.年, ans.月, ans.居住地 order by ans.年, ans.月 ASC";
 		}

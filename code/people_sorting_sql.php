@@ -159,7 +159,9 @@ try{
                             (case when ans.對美元匯率總和 = 0 then 'NULL' else ans.對美元匯率總和/ans.number1 end)
                             from ".$sql." group by ans.年, ans.居住地";
         else if($_POST["time"] == "month" && $exchangerate == "yes")    
-            $newsql = $newsql.") as total_people, ans.幣別, ans.對新台幣匯率, ans.對美元匯率 from ".$sql.
+            $newsql = $newsql.") as total_people, ans.幣別,
+                            (case when ans.對新台幣匯率 = 0 then 'NULL' else ans.對新台幣匯率 end),
+                            (case when ans.對美元匯率 = 0 then 'NULL' else ans.對美元匯率 end) from ".$sql.
                                   " group by ans.年, ans.月, ans.居住地";
         else if($_POST["time"] == "year" && $exchangerate == "no")
             $newsql = $newsql.") as total_people from ".$sql." group by ans.年, ans.居住地";
