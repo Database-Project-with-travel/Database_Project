@@ -16,7 +16,7 @@ try{
     echo "<input type=\"radio\" name =\"datatype\" value=\"peoplereturnrate\"> 人數成長比例 &nbsp";
     echo "<input type=\"radio\" name =\"datatype\" value=\"sorting\"> 來台人數排序 &nbsp";
     echo "<br>";
-    echo "是否要呈現匯率 (對新台幣，若無該國貨幣資料，則顯示美元對新台幣) <br>";    
+    echo "是否要呈現匯率 (若無該國貨幣資料，則該國幣顯示美元) <br>";    
     echo "<input type=\"radio\" name =\"exchangerate\" value=\"yes\"> 是 &nbsp";
     echo "<input type=\"radio\" name =\"exchangerate\" value=\"no\"> 否 &nbsp <br>";
     echo "<input type=\"submit\" value=\"submit\">";
