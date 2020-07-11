@@ -35,9 +35,17 @@ try{
 	$sql = rtrim($sql,", ");
 	$sql = $sql.");";
 
-	echo $sql;
+	#echo $sql;
 	$stmt = $conn->prepare($sql);
 	$stmt->execute();
+
+	echo "<form method=\"post\" action=\"/home_page.php\">";
+	echo "<input type=\"submit\" value=\"Go back to home page\">";
+	echo "</form>";
+
+	echo "<form method=\"post\" action=\"/insert_inbound_option.php\">";
+	echo "<input type=\"submit\" value=\"Go back to insert_inbound_option\">";
+	echo "</form>";
 
 	echo "<table style='border: solid 1px black;'>";
 	echo "<tr><th>ID</th><th>年</th><th>月</th><th>居住地</th><th>年齡</th><th>華僑／外籍</th><th>性別</th><th>職業</th><th>來臺原因</th><th>交通方式</th><th>";

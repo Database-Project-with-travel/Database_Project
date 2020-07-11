@@ -35,9 +35,17 @@ try{
 	$sql = rtrim($sql,", ");
 	$sql = $sql.");";
 
-	echo $sql;
+	#echo $sql;
 	$stmt = $conn->prepare($sql);
 	$stmt->execute();
+
+	echo "<form method=\"post\" action=\"/home_page.php\">";
+	echo "<input type=\"submit\" value=\"Go back to home page\">";
+	echo "</form>";
+
+	echo "<form method=\"post\" action=\"/insert_outbound_option.php\">";
+	echo "<input type=\"submit\" value=\"Go back to insert_outbound_option\">";
+	echo "</form>";
 
 	echo "<table style='border: solid 1px black;'>";
 	echo "<tr><th>ID</th><th>年</th><th>月</th><th>國家名稱</th><th>年齡</th><th>性別</th><th>交通方式</th><th>";
