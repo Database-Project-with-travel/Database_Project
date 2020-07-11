@@ -11,7 +11,7 @@ try{
 	session_start();
 	$type = $_SESSION["type"];
 	$exchangerate = $_SESSION["exchangerate"];
-	$filenamein = "outbound_".$type;
+	$filename = "outbound_".$type;
 	$_SESSION["filename"] = $filename;
 
 	$conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8",

@@ -23,6 +23,7 @@ try{
     $filenameout = "outbound_".$_SESSION["type"];
     session_destroy();
 
+    
     $sql = "select * from ".$filenamein." where 年 = 108 AND 月 = 4 AND 居住地 = '日本';";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
@@ -84,13 +85,39 @@ try{
             }
 
         }
-        if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 5){
+
+        /*if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 5){
             header("Location: /select_inbound_outbound.php\n");
+        }*/
+        if($exchangerate == "no"){
+            if($_POST["time"] == "month")
+                $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數, 
+                (case when inbound_tmp.總人數 = 0 then 'NULL' when (inbound.年 = 98 and inbound.月 = 1) 
+                then 'NULL 'else ((inbound.總人數/inbound_tmp.總人數)-1)*100 end) as 入境_成長,
+                (case when outbound_tmp.總人數 = 0 then 'NULL' when (outbound.年 = 98 and outbound.月 = 1) 
+                then 'NULL 'else ((outbound.總人數/outbound_tmp.總人數)-1)*100 end) as  出境_成長 from ";
+            else
+                $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數, 
+                (case when inbound_tmp.總人數 = 0 then 'NULL' when inbound.年 = 98
+                then 'NULL 'else ((inbound.總人數/inbound_tmp.總人數)-1)*100 end) as 入境_成長,
+                (case when outbound_tmp.總人數 = 0 then 'NULL' when outbound.年 = 98 
+                then 'NULL 'else ((outbound.總人數/outbound_tmp.總人數)-1)*100 end) as  出境_成長 from ";
         }
-        if($exchangerate == "no")
-            $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數 from ";
         else{
-            $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數, exchange.幣別, 
+            if($_POST["time"] == "month")
+                $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數,
+                (case when inbound_tmp.總人數 = 0 then 'NULL' when (inbound.年 = 98 and inbound.月 = 1) 
+                then 'NULL 'else ((inbound.總人數/inbound_tmp.總人數)-1)*100 end) as 入境_成長,
+                (case when outbound_tmp.總人數 = 0 then 'NULL' when (outbound.年 = 98 and outbound.月 = 1) 
+                then 'NULL 'else ((outbound.總人數/outbound_tmp.總人數)-1)*100 end) as  出境_成長, exchange.幣別, 
+                (case when exchange.對新台幣匯率 IS NOT NULL then exchange.對新台幣匯率 else 'NULL' end), 
+                (case when exchange.對美元匯率 IS NOT NULL then exchange.對美元匯率 else 'NULL' end) from ";
+            else
+                $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數,
+                (case when inbound_tmp.總人數 = 0 then 'NULL' when inbound.年 = 98
+                then 'NULL 'else ((inbound.總人數/inbound_tmp.總人數)-1)*100 end) as 入境_成長,
+                (case when outbound_tmp.總人數 = 0 then 'NULL' when outbound.年 = 98
+                then 'NULL 'else ((outbound.總人數/outbound_tmp.總人數)-1)*100 end) as  出境_成長, exchange.幣別, 
                 (case when exchange.對新台幣匯率 IS NOT NULL then exchange.對新台幣匯率 else 'NULL' end), 
                 (case when exchange.對美元匯率 IS NOT NULL then exchange.對美元匯率 else 'NULL' end) from ";
             $sql_rate = $_POST["time"] == "year" ? "(select rate.年," :"(select rate.年, rate.月,"; 
@@ -145,32 +172,75 @@ try{
         $inbound = rtrim($inbound,"or");
         $outbound = rtrim($outbound,"or");
 
+        $inbound_tmp = $inbound;
+        $outbound_tmp = $outbound;
+
         $inbound = $inbound.") and (( 年 > ".$starty." and 年 < ".$endy.") 
         or ( 年 = ".$starty." and 月 >= ".$startm.") or ( 年 = ".$endy." and 月 <= ".$endm."))";
         $outbound = $outbound.") and (( 年 > ".$starty." and 年 < ".$endy.") 
-        or ( 年 = ".$starty." and 月 >= ".$startm.") or ( 年 = ".$endy." and 月 <= ".$endm."))";        
+        or ( 年 = ".$starty." and 月 >= ".$startm.") or ( 年 = ".$endy." and 月 <= ".$endm."))"; 
+
+        if($startm > 1 && $endm > 1){
+            $inbound_tmp = $inbound_tmp.") and (( 年 > ".$starty." and 年 < ".$endy.") or ( 年 = ".
+                    $starty." and 月 >= ".($startm-1).") or ( 年 = ".$endy." and 月 <= ".($endm-1).")) ";
+            $outbound_tmp = $outbound_tmp.") and (( 年 > ".$starty." and 年 < ".$endy.") or ( 年 = ".
+                    $starty." and 月 >= ".($startm-1).") or ( 年 = ".$endy." and 月 <= ".($endm-1).")) ";
+        }
+        else if($startm > 1 && $endm = 1){
+            $inbound_tmp = $inbound_tmp.") and (( 年 > ".$starty." and 年 < ".($endy-1).") or ( 年 = ".
+                    $starty." and 月 >= ".($startm-1).") or ( 年 = ".($endy-1)." and 月 <= 12)) "; 
+            $outbound_tmp = $outbound_tmp.") and (( 年 > ".$starty." and 年 < ".($endy-1).") or ( 年 = ".
+                    $starty." and 月 >= ".($startm-1).") or ( 年 = ".($endy-1)." and 月 <= 12)) "; 
+        }
+        else if($startm = 1 && $endm > 1){
+            $inbound_tmp = $inbound_tmp.") and (( 年 > ".($starty-1)." and 年 < ".$endy.") or ( 年 = ".
+                    ($starty-1)." and 月 >= 12 ) or ( 年 = ".$endy." and 月 <= ".($endm-1).")) ";
+            $outbound_tmp = $outbound_tmp.") and (( 年 > ".($starty-1)." and 年 < ".$endy.") or ( 年 = ".
+                    ($starty-1)." and 月 >= 12 ) or ( 年 = ".$endy." and 月 <= ".($endm-1).")) ";
+        }
+        else{
+            $inbound_tmp = $inbound_tmp.") and (( 年 > ".($starty-1)." and 年 < ".($endy-1).") or ( 年 = ".
+                    ($starty-1)." and 月 >= 12 ) or ( 年 = ".($endy-1)." and 月 <= 12)) ";  
+            $outbound_tmp = $outbound_tmp.") and (( 年 > ".($starty-1)." and 年 < ".($endy-1).") or ( 年 = ".
+                    ($starty-1)." and 月 >= 12 ) or ( 年 = ".($endy-1)." and 月 <= 12)) ";
+        }
 
         $inbound = ($_POST["time"] == "month") ? $inbound." group by 年, 月, 居住地) as inbound, " : $inbound." group by 年, 居住地) as inbound, ";
-        $outbound = ($_POST["time"] == "month") ? $outbound." group by 年, 月, 國家名稱) as outbound " : $outbound." group by 年, 國家名稱) as outbound ";
+        $outbound = ($_POST["time"] == "month") ? $outbound." group by 年, 月, 國家名稱) as outbound, " : $outbound." group by 年, 國家名稱) as outbound, ";     
+        $inbound_tmp = ($_POST["time"] == "month") ? $inbound_tmp." group by 年, 月, 居住地) as inbound_tmp, " : $inbound_tmp." group by 年, 居住地) as inbound_tmp, ";
+        $outbound_tmp = ($_POST["time"] == "month") ? $outbound_tmp." group by 年, 月, 國家名稱) as outbound_tmp " : $outbound_tmp." group by 年, 國家名稱) as outbound_tmp ";
 
 
         if($exchangerate == "yes"){
             if($_POST["time"] == "year")
-                $sql = $sql.$sql_rate.$inbound.$outbound."where exchange.國家名稱 = inbound.居住地 and exchange.國家名稱 = outbound.國家名稱
+                $sql = $sql.$sql_rate.$inbound.$outbound.$inbound_tmp.$outbound_tmp.
+                "where exchange.國家名稱 = inbound.居住地 and exchange.國家名稱 = outbound.國家名稱
+                and inbound.居住地 = inbound_tmp.居住地 and (inbound.年 = inbound_tmp.年 + 1 or inbound.年 = 98)
+                and outbound.國家名稱 = outbound_tmp.國家名稱 and (outbound.年 = outbound_tmp.年 + 1 or outbound.年 = 98)
                 and inbound.居住地 = outbound.國家名稱 and inbound.年 = outbound.年
                 and inbound.年 = exchange.年  and exchange.年 = outbound.年";
             else
-                $sql = $sql.$sql_rate.$inbound.$outbound."where exchange.國家名稱 = inbound.居住地 and exchange.國家名稱 = outbound.國家名稱
-                and inbound.居住地 = outbound.國家名稱 and inbound.年 = outbound.年 and inbound.月 = outbound.月
-                 and inbound.年 = exchange.年  and exchange.年 = outbound.年";
+                $sql = $sql.$sql_rate.$inbound.$outbound.$inbound_tmp.$outbound_tmp.
+                "where exchange.國家名稱 = inbound.居住地 and exchange.國家名稱 = outbound.國家名稱
+                and inbound.居住地 = inbound_tmp.居住地 and ((inbound.年*12+inbound.月-inbound_tmp.年*12-inbound_tmp.月) = 1 
+                or (inbound.年 = 98 and inbound.月 = 1))
+                and outbound.國家名稱 = outbound_tmp.國家名稱 and ((outbound.年*12+outbound.月-outbound_tmp.年*12-outbound_tmp.月) = 1 
+                or (outbound.年 = 98 and outbound.月 = 1))
+                and inbound.年 = exchange.年  and exchange.年 = outbound.年";
         }
         else{            
-            if($_POST["time"] == "month")
-                $sql = $sql.$sql_rate.$inbound.$outbound."where inbound.居住地 = outbound.國家名稱 
-                and inbound.年 = outbound.年 and inbound.月 = outbound.月";
+            if($_POST["time"] == "year")
+                $sql = $sql.$sql_rate.$inbound.$outbound.$inbound_tmp.$outbound_tmp."where inbound.居住地 = outbound.國家名稱 
+                and inbound.居住地 = inbound_tmp.居住地 and (inbound.年 = inbound_tmp.年 + 1 or inbound.年 = 98)
+                and outbound.國家名稱 = outbound_tmp.國家名稱 and (outbound.年 = outbound_tmp.年 + 1 or outbound.年 = 98)
+                and inbound.年 = outbound.年";
             else
-                $sql = $sql.$sql_rate.$inbound.$outbound."where inbound.居住地 = outbound.國家名稱 
-                and inbound.年 = outbound.年";               
+                $sql = $sql.$sql_rate.$inbound.$outbound.$inbound_tmp.$outbound_tmp."where inbound.居住地 = outbound.國家名稱 
+                and inbound.居住地 = inbound_tmp.居住地 and ((inbound.年*12+inbound.月-inbound_tmp.年*12-inbound_tmp.月) = 1 
+                or (inbound.年 = 98 and inbound.月 = 1))
+                and outbound.國家名稱 = outbound_tmp.國家名稱 and ((outbound.年*12+outbound.月-outbound_tmp.年*12-outbound_tmp.月) = 1 
+                or (outbound.年 = 98 and outbound.月 = 1))
+                and inbound.年 = outbound.年 and inbound.月 = outbound.月";               
         }
         if($_POST["time"] == "year")
             $sql = $sql." group by inbound.年, inbound.居住地";
@@ -195,10 +265,12 @@ try{
     foreach($record as $k => $v)
         echo "</th><th>入境 ".$v."</th><th>出境 ".$v;
     if($exchangerate == "no")
-        echo "</th><th>入境總人數</th><th>出境總人數</th></tr>";
+        echo "</th><th>入境總人數</th><th>出境總人數</th><th>入境人數成長率(百分比)</th><th>出境人數成長率(百分比)</th></tr>";
     else
-        echo "</th><th>入境總人數</th><th>出境總人數</th><th>幣別</th><th>對新台幣匯率</th><th>對美元匯率</th></tr>";
-	echo $sql;
+        echo "</th><th>入境總人數</th><th>出境總人數</th><th>入境人數成長率(百分比)</th><th>出境人數成長率(百分比)</th><th>幣別</th><th>對新台幣匯率</th><th>對美元匯率</th></tr>";
+    echo $sql;
+    echo "人數成長比例 = (某期間人數/前期間人口)*100% <br>";
+	echo "!!!當前期間人口總數為 0 時，則顯示'NULL'!!!<br>";
 	$stmt = $conn->prepare($sql);
 	$stmt->execute();	
 	#$count = $stmt->rowCount();
@@ -215,7 +287,7 @@ try{
 	foreach($result as $row){
 		echo "<tr>";
 		foreach($row as $k => $v){
-			echo "<td style='width:100px;border:1px solid black;'>".$v."</td>";
+			echo "<td style='width:150px;border:1px solid black;'>".$v."</td>";
 		}
 		echo "</tr>";
     }
