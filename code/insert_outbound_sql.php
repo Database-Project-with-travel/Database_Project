@@ -14,7 +14,7 @@ try{
 	$sql = "";
     	$cnt = 0; //use to check if data is not enough
 
-	$sql = "insert into insert_outbound (年, 月, 國家名稱, 年齡, 性別, 交通方式) values (";
+	$sql = "insert into user_outbound (年, 月, 國家名稱, 年齡, 性別, 交通方式) values (";
 	
 	if($_POST)
 	{
@@ -42,7 +42,7 @@ try{
 	echo "<table style='border: solid 1px black;'>";
 	echo "<tr><th>ID</th><th>年</th><th>月</th><th>國家名稱</th><th>年齡</th><th>性別</th><th>交通方式</th><th>";
 
-	$sql = "select * from insert_outbound;";
+	$sql = "select * from user_outbound;";
 	$stmt = $conn->prepare($sql);
 	$stmt->execute();
 	$result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
