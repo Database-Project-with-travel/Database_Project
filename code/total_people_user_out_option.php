@@ -9,10 +9,12 @@ $dbname = "project_travel";
 try{
 	echo "!!!若選填不完全，會重新導向至上一頁。!!!<br>";
     session_start();
-    $type = $_SESSION["type"];
-    $exchangerate = $_SESSION["exchangerate"];
-    $filename = "inbound_".$type;
-    $_SESSION["filename"] = $filename;
+    $type = $_POST["type"];
+    $exchangerate = $_POST["exchangerate"];
+    $filename = "outbound_".$type;
+	$_SESSION["filename"] = $filename;
+	$_SESSION["type"] = $type;
+	echo $filename;
 
 	$conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8",
 	$username,$password);
@@ -87,7 +89,7 @@ try{
 	}
 	echo "<br><br>";
 
-    $sql = "select * from ".$filename." where 年 = 108 AND 月 = 4 AND 居住地 = '日本';";
+    $sql = "select * from ".$filename." where 年 = 108 AND 月 = 4 AND 國家名稱 = '日本';";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
 
@@ -97,7 +99,7 @@ try{
     echo "請勾選要統計的項目 (複選)：<br>";
 	foreach($result as $row){
 		foreach($row as $k => $v){
-            if($v == "" || $k == "年" || $k == "月" || $k == "居住地") continue;
+            if($v == "" || $k == "年" || $k == "月" || $k == "國家名稱") continue;
 			echo "<input type=\"checkbox\" name=\"$k\",value=\"$k\">";
             echo "<label for=\"$k\">".$k."</label>";
             echo "&nbsp";
@@ -125,7 +127,7 @@ try{
     echo "<br>";
 	echo "<input type=\"submit\" value=\"Submit\">";
     echo "</form>";
-    echo "<form method=\"post\" action=\"/select_with_user_inbound.php\">";
+    echo "<form method=\"post\" action=\"/select_with_user_outbound.php\">";
     echo "<input type=\"submit\" value=\"Back\">";
 	echo "</form>";
     

@@ -9,10 +9,11 @@ $dbname = "project_travel";
 try{
 	echo "!!!若選填不完全，會重新導向至上一頁。!!!<br>";
     session_start();
-    $type = $_SESSION["type"];
-    $exchangerate = $_SESSION["exchangerate"];
+    $type = $_POST["type"];
+    $exchangerate = $_POST["exchangerate"];
     $filename = "inbound_".$type;
-    $_SESSION["filename"] = $filename;
+	$_SESSION["filename"] = $filename;
+	$_SESSION["type"] = $type;
 
 	$conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8",
 	$username,$password);

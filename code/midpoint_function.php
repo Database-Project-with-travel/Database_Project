@@ -14,9 +14,9 @@ try{
      }
      else if($_POST["function"] == "insert"){
           if($_POST["way"] == "Inbound")
-               header("Location: /insert_inbound.php\n");
+               header("Location: /insert_inbound_option.php\n");
           else if($_POST["way"] == "Outbound")
-               header("Location: /insert_outbound.php\n");
+               header("Location: /insert_outbound_option.php\n");
           else
                header("Location: /home_page.php\n");                  
      }
