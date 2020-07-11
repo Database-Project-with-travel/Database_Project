@@ -102,7 +102,7 @@ try{
 	echo "<br>";
 	echo "<input type=\"submit\" value=\"Submit\">";
 	echo "</form>";
-	echo "<form method=\"post\" action=\"/insert_outbound_option.php\">";
+	echo "<form method=\"post\" action=\"/home_page.php\">";
 	echo "<input type=\"submit\" value=\"Back\">";
 	echo "</form>";
 }catch(PDOException $e){
