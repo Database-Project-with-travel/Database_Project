@@ -43,7 +43,7 @@ try{
 	echo "</form>";
 
 	echo "<table style='border: solid 1px black;'>";
-	echo "<tr><th>ID</th><th>年</th><th>月</th><th>居住地</th><th>年齡</th><th>華僑／外籍</th><th>性別</th><th>職業</th><th>來臺原因</th><th>交通方式</th><th>";
+	echo "<tr><th>ID</th><th>年</th><th>月</th><th>國家名稱</th><th>年齡</th><th>性別</th><th>交通方式</th><th>";
 
 	$sql = "select * from user_outbound;";
 	$stmt = $conn->prepare($sql);
