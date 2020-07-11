@@ -46,28 +46,33 @@ try{
 	$record = array();
 	$country = array();
 	$cnt = 0;//use to check if data is not enough
-
+    echo "YOU CHOOSE :";
 	if($_POST){
 		foreach($_POST as $k => $v){
 			if($k == "time"){
 				$sql = ($v == "month") ? "( SELECT 年, 月, 國家名稱, " : "( SELECT 年, 國家名稱, ";
 				$cnt++;
+				echo $v."&nbsp";
 			}
 			else if($k == "syear"){
 				$starty = $v;
 				$cnt++;
+				echo $v."&nbsp";
 			}
 			else if($k == "smonth"){
 				$startm = $v;	
 				$cnt++;
+				echo $v."&nbsp";
 			}	
 			else if($k == "eyear"){
 				$endy = $v;
 				$cnt++;
+				echo $v."&nbsp";
 			}
 			else if($k == "emonth"){
 				$endm = $v;
 				$cnt++;
+				echo $v."&nbsp";
 			}
 			else{
                 $check = 0;
@@ -79,11 +84,12 @@ try{
                     }
                 }
                 if($check == 0)
-                    array_push($country,$k);
+					array_push($country,$k);
+				echo $k."&nbsp";
             }
-
 		}
-		if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 5){
+		echo "<br>";
+		if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 5 || $starty*12 + $startm > $endy*12 + $endm){
             header("Location: /select_outbound.php\n");
         }
         $sql = $sql."sum(";
@@ -168,27 +174,27 @@ try{
 			else
 				$sql_rate = $sql_rate."group by rate.年, rate.月, currency.國家名稱) as exchange";
 		}
-		$finalsql = ($_POST["time"] == "month") ? "SELECT ans.年, ans.月, ans.國家名稱, " : "SELECT ans.年, ans.國家名稱, ";
+		$finalsql = ($_POST["time"] == "month") ? "SELECT ans.年 as 年, ans.月 as 月, ans.國家名稱 as 國家名稱, " : "SELECT ans.年 as 年, ans.國家名稱 as 國家名稱, ";
 		foreach($record as $k => $v){
-            $finalsql = $finalsql."ans.".$v.", ";
+			$finalsql = $finalsql."ans.".$v." as ".$v.", ";
 		}
         if($_POST["time"] == "year" && $exchangerate == "yes"){
-			$finalsql = $finalsql."ans.total_people, ans.ratio, "."exchange.幣別, 
-						(case when exchange.對新台幣匯率總和 = 0 then 'NULL' else exchange.對新台幣匯率總和/exchange.number end),
-						(case when exchange.對美元匯率總和 = 0 then 'NULL' else exchange.對美元匯率總和/exchange.number1 end)".  
+			$finalsql = $finalsql."ans.total_people as 總人數, ans.ratio as 人數成長率, "."exchange.幣別 as 幣別, 
+						(case when exchange.對新台幣匯率總和 = 0 then 'NULL' else exchange.對新台幣匯率總和/exchange.number end) as 對新台幣匯率,
+						(case when exchange.對美元匯率總和 = 0 then 'NULL' else exchange.對美元匯率總和/exchange.number1 end) as 對美元匯率".  
 						" from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 and ans.國家名稱 = exchange.國家名稱 group by ans.年, ans.國家名稱 order by ans.年 ASC";
 		}
         else if($_POST["time"] == "month" && $exchangerate == "yes"){    
-			$finalsql = $finalsql."ans.total_people, ans.ratio, "."
-						exchange.幣別, (case when exchange.對新台幣匯率 = 0 then 'NULL' else exchange.對新台幣匯率 end),
-						(case when exchange.對美元匯率 = 0 then 'NULL' else exchange.對美元匯率 end) from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 
+			$finalsql = $finalsql."ans.total_people as 總人數, ans.ratio as 人數成長率, "."
+						exchange.幣別 as 幣別, (case when exchange.對新台幣匯率 = 0 then 'NULL' else exchange.對新台幣匯率 end) as 對新台幣匯率,
+						(case when exchange.對美元匯率 = 0 then 'NULL' else exchange.對美元匯率 end) as 對美元匯率 from ".$newsql.", ".$sql_rate." where ans.年 = exchange.年 
 						and ans.月 = exchange.月 and ans.國家名稱 = exchange.國家名稱 
 						group by ans.年, ans.月, ans.國家名稱 order by ans.年, ans.月 ASC";
 		}
         else if($_POST["time"] == "year" && $exchangerate == "no")
-            $finalsql = $finalsql."ans.total_people, ans.ratio from ".$newsql." group by ans.年, ans.國家名稱 order by ans.年 ASC";
+            $finalsql = $finalsql."ans.total_people as 總人數, ans.ratio as 人數成長率 from ".$newsql." group by ans.年, ans.國家名稱 order by ans.年 ASC";
         else
-			$finalsql = $finalsql."ans.total_people, ans.ratio from ".$newsql." group by ans.年, ans.月, ans.國家名稱 order by ans.年, ans.月 ASC";
+			$finalsql = $finalsql."ans.total_people as 總人數, ans.ratio as 人數成長率 from ".$newsql." group by ans.年, ans.月, ans.國家名稱 order by ans.年, ans.月 ASC";
 	}
     
     echo "<form method=\"post\" action=\"/home_page.php\">";
@@ -234,7 +240,8 @@ try{
 		}
 		echo "</tr>";
     }
-
+    $stmt = $conn->prepare("insert into user_history (query_sql) values (\"".$finalsql."\");");
+    $stmt->execute();
 }catch(PDOException $e){
 	echo "Error: " . $e->getMessage();
 }

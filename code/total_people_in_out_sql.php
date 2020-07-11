@@ -47,28 +47,33 @@ try{
 	$record = array();
     $country = array();
     $cnt = 0;//use to check if data is not enough
-
+    echo "YOU CHOOSE :";
 	if($_POST){
 		foreach($_POST as $k => $v){
 			if($k == "time"){
-                $sql = ($v == "month") ? "SELECT inbound.年, inbound.月, inbound.居住地" : "SELECT inbound.年, inbound.居住地";
+                $sql = ($v == "month") ? "SELECT inbound.年 as 年, inbound.月 as 月, inbound.居住地 as 居住地" : "SELECT inbound.年 as 年, inbound.居住地 as 居住地";
                 $cnt++;
+                echo $v."&nbsp";
 			}
 			else if($k == "syear"){
                 $starty = $v;
                 $cnt++;
+                echo $v."&nbsp";
 			}
 			else if($k == "smonth"){
                 $startm = $v;
                 $cnt++;
+                echo $v."&nbsp";
 			}		
 			else if($k == "eyear"){
                 $endy = $v;
                 $cnt++;
+                echo $v."&nbsp";
 			}
 			else if($k == "emonth"){
                 $endm = $v;
                 $cnt++;
+                echo $v."&nbsp";
 			}
 			else{
                 $check = 0;
@@ -81,18 +86,19 @@ try{
                 }
                 if($check == 0)
                     array_push($country,$k);
+                echo $k."&nbsp";
             }
-
         }
-        if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 5){
+        echo "<br>";
+        if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 5 || $starty*12 + $startm > $endy*12 + $endm){
             header("Location: /select_inbound_outbound.php\n");
         }
         if($exchangerate == "no")
             $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數 from ";
         else{
-            $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數, exchange.幣別, 
-                (case when exchange.對新台幣匯率 IS NOT NULL then exchange.對新台幣匯率 else 'NULL' end), 
-                (case when exchange.對美元匯率 IS NOT NULL then exchange.對美元匯率 else 'NULL' end) from ";
+            $sql = $sql.", inbound.總人數 as inbound_總人數, outbound.總人數 as outbound_總人數, exchange.幣別 as 幣別, 
+                (case when exchange.對新台幣匯率 IS NOT NULL then exchange.對新台幣匯率 else 'NULL' end) as 對新台幣匯率, 
+                (case when exchange.對美元匯率 IS NOT NULL then exchange.對美元匯率 else 'NULL' end) as 對美元匯率 from ";
             $sql_rate = $_POST["time"] == "year" ? "(select rate.年," :"(select rate.年, rate.月,"; 
             $sql_rate = $sql_rate." currency.國家名稱, currency.幣別, 
                         avg(case when rate.對新台幣匯率 = 0 then NULL else rate.對新台幣匯率 end) as 對新台幣匯率,
@@ -219,6 +225,8 @@ try{
 		}
 		echo "</tr>";
     }
+    $stmt = $conn->prepare("insert into user_history (query_sql) values (\"".$sql."\");");
+    $stmt->execute();
 
 }catch(PDOException $e){
 	echo "Error: " . $e->getMessage();

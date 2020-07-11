@@ -44,31 +44,37 @@ try{
 	$record = array();
     $country = array();
     $cnt = 0;//use to check if data is not enough
-
+    echo "YOU CHOOSE :";
 	if($_POST){
 		foreach($_POST as $k => $v){
 			if($k == "time"){
                 $sql = ($v == "month") ? "( SELECT tmp.年, tmp.月, tmp.居住地, " : "( SELECT tmp.年, tmp.居住地, ";
                 $cnt++;
+                echo $v."&nbsp";
 			}
 			else if($k == "syear"){
                 $starty = $v;
                 $cnt++;
+                echo $v."&nbsp";
 			}
 			else if($k == "smonth"){
                 $startm = $v;
                 $cnt++;
+                echo $v."&nbsp";
 			}		
 			else if($k == "eyear"){
                 $endy = $v;
                 $cnt++;
+                echo $v."&nbsp";
 			}
 			else if($k == "emonth"){
                 $endm = $v;
                 $cnt++;
+                echo $v."&nbsp";
             }
             else if($k == "number" || $k == "sorting_way"){
                 $cnt++;
+                echo $v."&nbsp";
                 continue;
             }
 			else{
@@ -82,10 +88,11 @@ try{
                 }
                 if($check == 0)
                     array_push($country,$k);
+                    echo $k."&nbsp";
             }
-
         }
-        if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 7){
+        echo "<br>";
+        if(sizeof($country) == 0 || sizeof($record) == 0 || $cnt != 7 || $starty*12 + $startm > $endy*12 + $endm){
             header("Location: /select_inbound.php\n");
         }
 		$sql = $sql."sum(";
@@ -141,12 +148,12 @@ try{
         $newsql = "";
 
         if($_POST["time"] == "month")
-            $newsql = "( SELECT ans.年, ans.月, ans.居住地, ";
+            $newsql = "( SELECT ans.年 as 年, ans.月 as 月, ans.居住地 as 居住地, ";
         else
-            $newsql = "( SELECT ans.年, ans.居住地, ";
+            $newsql = "( SELECT ans.年 as 年, ans.居住地 as 居住地, ";
 
         foreach($record as $k => $v){
-            $newsql = $newsql."sum(ans.".$v."), ";
+            $newsql = $newsql."sum(ans.".$v.") as ".$v.", ";
         }
         $newsql = $newsql."sum(";
 		foreach($record as $k => $v){
@@ -154,14 +161,14 @@ try{
 		}
         $newsql = rtrim($newsql,"+");
         if($_POST["time"] == "year" && $exchangerate == "yes")
-            $newsql = $newsql.") as total_people,ans.幣別,
-                            (case when ans.對新台幣匯率總和 = 0 then 'NULL' else ans.對新台幣匯率總和/ans.number end),
-                            (case when ans.對美元匯率總和 = 0 then 'NULL' else ans.對美元匯率總和/ans.number1 end)
+            $newsql = $newsql.") as total_people,ans.幣別 as 幣別,
+                            (case when ans.對新台幣匯率總和 = 0 then 'NULL' else ans.對新台幣匯率總和/ans.number end) as 對新台幣匯率,
+                            (case when ans.對美元匯率總和 = 0 then 'NULL' else ans.對美元匯率總和/ans.number1 end) as 對美元匯率
                             from ".$sql." group by ans.年, ans.居住地";
         else if($_POST["time"] == "month" && $exchangerate == "yes")    
-            $newsql = $newsql.") as total_people, ans.幣別,
-                            (case when ans.對新台幣匯率 = 0 then 'NULL' else ans.對新台幣匯率 end),
-                            (case when ans.對美元匯率 = 0 then 'NULL' else ans.對美元匯率 end) from ".$sql.
+            $newsql = $newsql.") as total_people, ans.幣別 as 幣別,
+                            (case when ans.對新台幣匯率 = 0 then 'NULL' else ans.對新台幣匯率 end) as 對新台幣匯率,
+                            (case when ans.對美元匯率 = 0 then 'NULL' else ans.對美元匯率 end) as 對美元匯率 from ".$sql.
                                   " group by ans.年, ans.月, ans.居住地";
         else if($_POST["time"] == "year" && $exchangerate == "no")
             $newsql = $newsql.") as total_people from ".$sql." group by ans.年, ans.居住地";
@@ -212,7 +219,8 @@ try{
 		}
 		echo "</tr>";
     }
-
+    $stmt = $conn->prepare("insert into user_history (query_sql) values (\"".$fianlsql."\");");
+    $stmt->execute();
 }catch(PDOException $e){
 	echo "Error: " . $e->getMessage();
 }

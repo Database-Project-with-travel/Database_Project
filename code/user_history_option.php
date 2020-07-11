@@ -31,8 +31,12 @@ try{
 		}
 		echo "</option>";
 	}
+	echo "<br>";
 	echo "<input type=\"submit\" value=\"Submit\">";
 	echo "</select>";
+	echo "</form>";
+	echo "<form method=\"post\" action=\"/home_page.php\">";
+    echo "<input type=\"submit\" value=\"Go back to home_page\">";
 	echo "</form>";
 
 }catch(PDOException $e){

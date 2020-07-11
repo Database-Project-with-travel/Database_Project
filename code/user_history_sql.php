@@ -55,6 +55,14 @@ try{
 		}
 		echo "</tr>";
 	}
+	echo "<br>";
+	echo "<form method=\"post\" action=\"/home_page.php\">";
+    echo "<input type=\"submit\" value=\"Go back to home page\"> &nbsp";
+	echo "</form>";
+
+	echo "<form method=\"post\" action=\"/user_history_option.php\">";
+    echo "<input type=\"submit\" value=\"Go back to user_history_option\">";
+	echo "</form>";
 
 }catch(PDOException $e){
 	echo "Error: " . $e->getMessage();
