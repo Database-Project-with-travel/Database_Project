@@ -52,7 +52,7 @@ try{
 	if($_POST){
 		foreach($_POST as $k => $v){
 			if($k == "time"){
-                $sql = ($v == "month") ? "SELECT inbound.年, inbound.月, inbound.居住地" : "SELECT inbound.年, inbound.居住地";
+                $sql = ($v == "month") ? "SELECT distinct inbound.年, inbound.月, inbound.居住地" : "SELECT inbound.年, inbound.居住地";
                 $cnt++;
 			}
 			else if($k == "syear"){
@@ -226,7 +226,7 @@ try{
                 or (inbound.年 = 98 and inbound.月 = 1))
                 and outbound.國家名稱 = outbound_tmp.國家名稱 and ((outbound.年*12+outbound.月-outbound_tmp.年*12-outbound_tmp.月) = 1 
                 or (outbound.年 = 98 and outbound.月 = 1))
-                and inbound.年 = exchange.年  and exchange.年 = outbound.年";
+                and inbound.年 = exchange.年  and exchange.年 = outbound.年 and inbound.月 = outbound.月 and inbound.月 = exchange.月";
         }
         else{            
             if($_POST["time"] == "year")
