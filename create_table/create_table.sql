@@ -18,3 +18,4 @@ source create_table/create_table_outbound_traffic.sql
 
 source create_table/create_table_user_inbound.sql
 source create_table/create_table_user_outbound.sql
+source create_table/create_table_user_history.sql
