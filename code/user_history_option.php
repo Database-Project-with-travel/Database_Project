@@ -11,7 +11,7 @@ try{
 		$username,$password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
-	$stmt = $conn->prepare("select query_time from user_history;");
+	$stmt = $conn->prepare("select query_time from user_history order by query_time desc limit 15;");
 	$stmt->execute();
 
 	$result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
