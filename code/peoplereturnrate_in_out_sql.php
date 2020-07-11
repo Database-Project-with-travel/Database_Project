@@ -268,7 +268,7 @@ try{
         echo "</th><th>入境總人數</th><th>出境總人數</th><th>入境人數成長率(百分比)</th><th>出境人數成長率(百分比)</th></tr>";
     else
         echo "</th><th>入境總人數</th><th>出境總人數</th><th>入境人數成長率(百分比)</th><th>出境人數成長率(百分比)</th><th>幣別</th><th>對新台幣匯率</th><th>對美元匯率</th></tr>";
-    echo $sql;
+    #echo $sql;
     echo "人數成長比例 = (某期間人數/前期間人口)*100% <br>";
 	echo "!!!當前期間人口總數為 0 時，則顯示'NULL'!!!<br>";
 	$stmt = $conn->prepare($sql);

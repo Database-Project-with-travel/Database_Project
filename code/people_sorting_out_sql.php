@@ -191,7 +191,7 @@ try{
         echo "</th><th>總人數</th></tr>";
     else
         echo "</th><th>總人數</th><th>幣別</th><th>對新台幣匯率</th><th>對美元匯率</th></tr>";
-	echo $finalsql;
+	#echo $finalsql;
 	$stmt = $conn->prepare($finalsql);
 	$stmt->execute();	
 	#$count = $stmt->rowCount();
