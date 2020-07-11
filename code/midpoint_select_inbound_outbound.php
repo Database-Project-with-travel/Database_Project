@@ -7,9 +7,7 @@ try{
     if($_POST["datatype"] == "totalpeople")
         header("Location: /total_people_in_out_option.php\n");          
     else if($_POST["datatype"] == "peoplereturnrate")
-        header("Location: /peoplereturnrate_in_out_option.php\n");    
-    else if($_POST["datatype"] == "sorting")
-        header("Location: /people_sorting_in_out_option.php\n");             
+        header("Location: /peoplereturnrate_in_out_option.php\n");              
 }catch(PDOException $e){
 	echo "Error: " . $e->getMessage();
 }    

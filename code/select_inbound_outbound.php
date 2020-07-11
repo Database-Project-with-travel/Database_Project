@@ -11,7 +11,6 @@ try{
     echo "請點擊想要呈現的資料方式 <br>";
     echo "<input type=\"radio\" name =\"datatype\" value=\"totalpeople\"> 總人數 &nbsp";
     echo "<input type=\"radio\" name =\"datatype\" value=\"peoplereturnrate\"> 人數成長比例 &nbsp";
-    echo "<input type=\"radio\" name =\"datatype\" value=\"sorting\"> 人數排序 &nbsp";
     echo "<br>";
     echo "是否要呈現匯率 (若無該國貨幣資料，則該國幣別顯示美元) <br>";    
     echo "<input type=\"radio\" name =\"exchangerate\" value=\"yes\"> 是 &nbsp";
