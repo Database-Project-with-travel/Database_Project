@@ -1,6 +1,7 @@
 source create_table/create_table_country.sql
 source create_table/create_table_exchange_rate.sql
 source create_table/create_table_average_rate.sql
+source create_table/create_table_rate_to_TWD.sql
 
 source create_table/create_table_inbound_age.sql
 source create_table/create_table_inbound_gender.sql
@@ -14,3 +15,6 @@ source create_table/create_table_outbound_age.sql
 #source create_table/create_table_outbound_destination.sql
 source create_table/create_table_outbound_gender.sql
 source create_table/create_table_outbound_traffic.sql
+
+source create_table/create_table_user_inbound.sql
+source create_table/create_table_user_outbound.sql
