@@ -14,11 +14,11 @@ try{
      }
      else if($_POST["function"] == "insert"){
           if($_POST["way"] == "Inbound")
-               header("Location: /insert_inbound_option.php\n");
+               header("Location: /insert_inbound.php\n");
           else if($_POST["way"] == "Outbound")
-               header("Location: /insert_outbound_option.php\n");  
+               header("Location: /insert_outbound.php\n");
           else
-               header("Location: /insert_inbound_outbound_option.php\n");              
+               header("Location: /home_page.php\n");                  
      }
      else if($_POST["function"] == "update"){
           if($_POST["way"] == "Inbound")
@@ -26,16 +26,25 @@ try{
           else if($_POST["way"] == "Outbound")
                header("Location: /update_outbound.php\n");  
           else
-               header("Location: /update_inbound_outbound.php\n");              
+               header("Location: /home_page.php\n");              
      }
      else if($_POST["function"] == "delete"){
           if($_POST["way"] == "Inbound")
-               header("Location: /delete_inbound_option.php\n");
+               header("Location: /delete_inbound.php\n");
           else if($_POST["way"] == "Outbound")
-               header("Location: /delete_outbound_option.php\n");  
+               header("Location: /delete_outbound.php\n");
           else
-               header("Location: /delete_inbound_outbound_option.php\n");              
+               header("Location: /home_page.php\n");                
      }
+     else{
+          if($_POST["way"] == "Inbound")
+               header("Location: /select_with_user_inbound.php\n");
+          else if($_POST["way"] == "Outbound")
+               header("Location: /select_with_user_outbound.php\n");
+          else
+               header("Location: /home_page.php\n");      
+     }
+
 }catch(PDOException $e){
 	echo "Error: " . $e->getMessage();
 }    
