@@ -188,7 +188,7 @@ try{
                 and outbound.年 = exchange.年  and exchange.年 = user.年";
             else
                 $sql = $sql.$sql_rate.$outbound.$user."where exchange.國家名稱 = outbound.國家名稱 and exchange.國家名稱 = user.國家名稱
-                and outbound.國家名稱 = user.國家名稱 and outbound.年 = user.年 and outbound.月 = user.月
+                and outbound.國家名稱 = user.國家名稱 and outbound.年 = user.年 and outbound.月 = user.月  and outbound.月 = exchange.月
                  and outbound.年 = exchange.年  and exchange.年 = user.年";
         }
         else{            

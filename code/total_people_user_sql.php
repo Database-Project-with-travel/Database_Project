@@ -20,6 +20,7 @@ try{
     session_start();
     $exchangerate = $_SESSION["exchangerate"];
     $filenamein = "inbound_".$_SESSION["type"];
+    echo $exchangerate;
     session_destroy();
 
     $sql = "select * from ".$filenamein." where 年 = 108 AND 月 = 4 AND 居住地 = '日本';";
@@ -208,7 +209,7 @@ try{
                 and inbound.年 = exchange.年  and exchange.年 = user.年";
             else
                 $sql = $sql.$sql_rate.$inbound.$user."where exchange.國家名稱 = inbound.居住地 and exchange.國家名稱 = user.居住地
-                and inbound.居住地 = user.居住地 and inbound.年 = user.年 and inbound.月 = user.月
+                and inbound.居住地 = user.居住地 and inbound.年 = user.年 and inbound.月 = user.月 and inbound.月 = exchange.月
                  and inbound.年 = exchange.年  and exchange.年 = user.年";
         }
         else{            
@@ -245,7 +246,7 @@ try{
         echo "</th><th>入境總人數</th><th>新增總人數</th></tr>";
     else
         echo "</th><th>入境總人數</th><th>新增總人數</th><th>總人數</th><th>幣別</th><th>對新台幣匯率</th><th>對美元匯率</th></tr>";
-	#echo $sql;
+	echo $sql;
 	$stmt = $conn->prepare($sql);
 	$stmt->execute();	
 	#$count = $stmt->rowCount();
