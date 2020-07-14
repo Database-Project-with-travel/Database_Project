@@ -2,6 +2,7 @@
 header("Content-Type:text/html;charset=utf-8");
 try{	
     session_start();
+    echo "若選擇不完全，會重新導向回此頁<br>";
     echo "請點擊想要執行的類別 <br>";
     echo "<form method=\"post\" action = \"/midpoint_select_outbound.php\">";
     echo "<input type=\"radio\" name =\"type\" value=\"age\"> 年齡  &nbsp";

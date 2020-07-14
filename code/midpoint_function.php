@@ -9,8 +9,10 @@ try{
                header("Location: /select_inbound.php\n");
           else if($_POST["way"] == "Outbound")
                header("Location: /select_outbound.php\n");
+          else if($_POST["way"] == "Inbound&Outbound")
+               header("Location: /select_inbound_outbound.php\n"); 
           else
-               header("Location: /select_inbound_outbound.php\n");              
+               header("Location: /home_page.php\n");          
      }
      else if($_POST["function"] == "insert"){
           if($_POST["way"] == "Inbound")
@@ -44,9 +46,11 @@ try{
           else
                header("Location: /home_page.php\n");      
      }
-     else{
+     else if($_POST["function"] == "history"){
           header("Location: /user_history_option.php\n");
      }
+     else
+          header("Location: /home_page.php\n");
 
 }catch(PDOException $e){
 	echo "Error: " . $e->getMessage();
